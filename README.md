@@ -1,0 +1,1 @@
+ZkDash is an [zookeeper](https://zookeeper.apache.org/) path and data gui browser 

@@ -1,0 +1,18 @@
+
+language: scala
+scala:
+- 2.12.7
+
+jdk:
+- oraclejdk8
+
+jobs:
+  include:
+
+  - stage: deploy
+    name: "build package"
+    script: mvn package
+
+notifications:
+  email:
+  - zengzhangsong@gmail.com

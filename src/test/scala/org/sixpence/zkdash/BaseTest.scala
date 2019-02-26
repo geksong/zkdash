@@ -6,8 +6,8 @@ import org.scalatest.{FlatSpec, Matchers}
 import org.slf4j.LoggerFactory
 
 /**
-  *
-  * Created by bianshi on 2019/2/22.
+  * @author geksong
+  * Created by geksong on 2019/2/22.
   */
 class BaseTest extends FlatSpec with Matchers{
   val PORT = 2184

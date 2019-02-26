@@ -5,8 +5,8 @@ import org.I0Itec.zkclient.exception.ZkNoNodeException
 import org.sixpence.zkdash.BaseTest
 
 /**
-  *
-  * Created by bianshi on 2019/2/23.
+  * @author geksong
+  * Created by geksong on 2019/2/23.
   */
 class FetchDataCommandTest extends BaseTest{
   "FetchDataCommand" should "return data for path" in {
@@ -22,11 +22,11 @@ class FetchDataCommandTest extends BaseTest{
           sys.exit(0)
       }
       initCli.createPersistent("/root")
-      initCli.createPersistent("/root/fuck", "fuck this h")
+      initCli.createPersistent("/root/dkkweie", "dkkweie this h")
     })
 
     val zkCli = new ZkClient(ZKSERVER, CONNECTION_TIMEOUT)
-    new FetchDataCommand(zkCli).execute("/root/fuck")
+    new FetchDataCommand(zkCli).execute("/root/dkkweie")
       .doFinally(_ => {
         zkCli.close()
         shutdownServer()
@@ -36,7 +36,7 @@ class FetchDataCommandTest extends BaseTest{
       })
       .subscribe(a => {
         println(a)
-        a.data should equal("fuck this h")
+        a.data should equal("dkkweie this h")
       })
   }
 }

@@ -5,7 +5,8 @@ import org.sixpence.zkdash.view.component.DashFrame
 
 /**
   *
-  * Created by bianshi on 2019/2/22.
+  * @author geksong
+  * Created by geksong on 2019/2/22.
   */
 object MainApplication {
   def main(args: Array[String]): Unit = {

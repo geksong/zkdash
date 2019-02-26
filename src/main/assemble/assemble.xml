@@ -9,7 +9,7 @@
     <fileSets>
         <fileSet>
             <directory>${project.basedir}/src/main/bin</directory>
-            <outputDirectory>bin</outputDirectory>
+            <outputDirectory>/</outputDirectory>
         </fileSet>
         <fileSet>
             <directory>${project.basedir}/src/main/resources</directory>

@@ -7,8 +7,8 @@ import org.sixpence.zkdash.BaseTest
 import org.slf4j.LoggerFactory
 
 /**
-  *
-  * Created by bianshi on 2019/2/22.
+  * @author geksong
+  * Created by geksong on 2019/2/22.
   */
 class CreatePersistCommandTest extends BaseTest{
   val log = LoggerFactory.getLogger(classOf[CreatePersistCommandTest])

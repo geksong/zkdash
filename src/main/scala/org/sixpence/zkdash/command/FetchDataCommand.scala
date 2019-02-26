@@ -4,8 +4,8 @@ import org.I0Itec.zkclient.ZkClient
 import reactor.core.publisher.Mono
 
 /**
-  *
-  * Created by bianshi on 2019/2/23.
+  * @author geksong
+  * Created by geksong on 2019/2/23.
   */
 class FetchDataCommand(zkCli: ZkClient) {
   def execute(path: String): Mono[PathData] = {

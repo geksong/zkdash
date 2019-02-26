@@ -6,8 +6,8 @@ import reactor.core.publisher.Mono
 import scala.collection.JavaConverters._
 
 /**
-  *
-  * Created by bianshi on 2019/2/22.
+  * @author geksong
+  * Created by geksong on 2019/2/22.
   */
 class LsCommand(zkCli: ZkClient) {
   def execute(path: String): Mono[List[String]] = {

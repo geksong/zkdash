@@ -9,8 +9,8 @@ import javax.swing.tree.{DefaultMutableTreeNode, TreeModel, TreePath}
 import org.sixpence.zkdash.command.{FetchDataCommand, LsCommand, PathData}
 
 /**
-  *
-  * Created by bianshi on 2019/2/23.
+  * @author geksong
+  * Created by geksong on 2019/2/23.
   */
 class NodeComponent(lsCommand: LsCommand, fetchDataCommand: FetchDataCommand, cf: PathData => Unit) {
   private[this] val top = new DefaultMutableTreeNode("/")

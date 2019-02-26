@@ -5,8 +5,8 @@ import java.awt.Dimension
 import javax.swing._
 
 /**
-  *
-  * Created by bianshi on 2019/2/23.
+  * @author geksong
+  * Created by geksong on 2019/2/23.
   */
 class HelpComponent{
   def build(): JScrollPane = {

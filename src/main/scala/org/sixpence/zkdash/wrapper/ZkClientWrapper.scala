@@ -7,8 +7,8 @@ import org.I0Itec.zkclient.exception.ZkMarshallingError
 import org.I0Itec.zkclient.serialize.ZkSerializer
 
 /**
-  *
-  * Created by bianshi on 2019/2/25.
+  * @author geksong
+  * Created by geksong on 2019/2/25.
   */
 class ZkClientWrapper(zkServers: String, connectionTimeout: Int) extends ZkClient(zkServers, connectionTimeout){
   def this(zkServers: String) = {

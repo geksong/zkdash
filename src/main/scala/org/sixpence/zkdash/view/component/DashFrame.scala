@@ -7,8 +7,8 @@ import javax.swing._
 import org.sixpence.zkdash.wrapper.ZkClientWrapper
 
 /**
-  *
-  * Created by bianshi on 2019/2/26.
+  * @author geksong
+  * Created by geksong on 2019/2/26.
   */
 class DashFrame(title: String) extends JFrame(title) {
   def this() = {

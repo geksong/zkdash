@@ -20,7 +20,7 @@
         </encoder>
     </appender>
 
-    <root level="${log.level}">
+    <root level="INFO">
         <appender-ref ref="CONSOLE"/>
         <appender-ref ref="FILE_LOG"/>
     </root>

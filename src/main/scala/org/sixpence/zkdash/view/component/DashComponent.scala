@@ -8,8 +8,8 @@ import org.sixpence.zkdash.command.{FetchDataCommand, LsCommand, ServerStateInfo
 import org.sixpence.zkdash.wrapper.ZkClientWrapper
 
 /**
-  *
-  * Created by bianshi on 2019/2/26.
+  * @author geksong
+  * Created by geksong on 2019/2/26.
   */
 class DashComponent(zkClient: ZkClientWrapper) {
   def build(): JPanel = {

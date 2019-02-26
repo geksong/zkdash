@@ -8,8 +8,8 @@ import org.sixpence.zkdash.{BaseTest, TmpZkLocalServer}
 import org.slf4j.LoggerFactory
 
 /**
-  *
-  * Created by bianshi on 2019/2/22.
+  * @author geksong
+  * Created by geksong on 2019/2/22.
   */
 class LsCommandTest extends BaseTest{
   val log = LoggerFactory.getLogger(classOf[LsCommandTest])
@@ -17,7 +17,7 @@ class LsCommandTest extends BaseTest{
   "LsCommand" should "list child paths when path exists" in {
     initServer(initCli => {
       try {
-        initCli.deleteRecursive("/dubbo")
+        initCli.deleteRecursive("/d34")
         initCli.deleteRecursive("/url")
       }catch {
         case e: ZkNoNodeException =>
@@ -27,14 +27,14 @@ class LsCommandTest extends BaseTest{
           sys.exit(0)
       }
 
-      initCli.create("/dubbo", null, CreateMode.PERSISTENT)
+      initCli.create("/d34", null, CreateMode.PERSISTENT)
       initCli.create("/url", null, CreateMode.PERSISTENT)
-      initCli.create("/dubbo/com.dfire.soa.consumer.cart.center.api.ICartService", null, CreateMode.PERSISTENT)
+      initCli.create("/d34/com.dis.soa.consumer.cart.center.api.IMaService", null, CreateMode.PERSISTENT)
     })
 
     val zkCli = new ZkClient(ZKSERVER, CONNECTION_TIMEOUT)
     val lsC = new LsCommand(zkCli)
-    val parentPath = "/dubbo"
+    val parentPath = "/d34"
     val childs = lsC.execute(parentPath)
     childs.doFinally(_ => {
       zkCli.close()

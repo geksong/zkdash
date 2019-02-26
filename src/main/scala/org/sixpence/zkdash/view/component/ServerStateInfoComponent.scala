@@ -5,8 +5,8 @@ import org.sixpence.zkdash.command.ServerStateInfoCommand
 import reactor.core.publisher.Mono
 
 /**
-  *
-  * Created by bianshi on 2019/2/25.
+  * @author geksong
+  * Created by geksong on 2019/2/25.
   */
 class ServerStateInfoComponent(ssc: ServerStateInfoCommand) {
   def build(): Mono[JPanel] = {

@@ -8,8 +8,8 @@ import javax.swing.{JButton, JLabel, JPanel, JTextField}
 import org.sixpence.zkdash.wrapper.ZkClientWrapper
 
 /**
-  *
-  * Created by bianshi on 2019/2/26.
+  * @author geksong
+  * Created by geksong on 2019/2/26.
   */
 class ConnectComponent(cf: ZkClientWrapper => Unit) {
   def build(): JPanel = {

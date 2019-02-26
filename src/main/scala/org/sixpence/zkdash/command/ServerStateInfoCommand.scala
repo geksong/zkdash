@@ -4,8 +4,8 @@ import org.sixpence.zkdash.wrapper.ZkClientWrapper
 import reactor.core.publisher.Mono
 
 /**
-  *
-  * Created by bianshi on 2019/2/25.
+  * @author geksong
+  * Created by geksong on 2019/2/25.
   */
 class ServerStateInfoCommand(zkCli: ZkClientWrapper) {
   def execute(): Mono[ServerState] = {

@@ -3,8 +3,8 @@ package org.sixpence.zkdash.command
 import org.I0Itec.zkclient.ZkClient
 
 /**
-  *
-  * Created by bianshi on 2019/2/23.
+  * @author geksong
+  * Created by geksong on 2019/2/23.
   */
 class WriteDataCommand(zkClient: ZkClient) {
   def execute(path: String, data: AnyRef): Unit = {

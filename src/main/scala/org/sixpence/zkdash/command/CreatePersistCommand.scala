@@ -6,7 +6,8 @@ import reactor.core.publisher.Mono
 
 /**
   *
-  * Created by bianshi on 2019/2/22.
+  * @author geksong
+  * Created by geksong on 2019/2/22.
   */
 class CreatePersistCommand(zkCli: ZkClient) {
   def execute(path: String, data: Any): Mono[String] = {

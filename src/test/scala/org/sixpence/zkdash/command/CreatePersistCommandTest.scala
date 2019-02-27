@@ -6,6 +6,8 @@ import org.scalatest.FlatSpec
 import org.sixpence.zkdash.BaseTest
 import org.slf4j.LoggerFactory
 
+import scala.util.Try
+
 /**
   * @author geksong
   * Created by geksong on 2019/2/22.
@@ -17,31 +19,23 @@ class CreatePersistCommandTest extends BaseTest{
     val path = "/tests1/t1"
     val data = "hello"
     initServer(initCli => {
-      try {
+      Try{
         initCli.deleteRecursive("/tests1")
-      }catch {
+      }.recover({
         case e: ZkNoNodeException =>
         case _: Throwable =>
           shutdownServer()
           log.error("init zk server error")
           sys.exit(0)
-      }
+      })
     })
-    val zkClient = new ZkClient(ZKSERVER, CONNECTION_TIMEOUT)
+    val zkClient = new ZkClient(zkServer, connectionTimeout)
     val command = CreatePersistCommand(zkClient)
-    command.execute("/tests1", null).subscribe(_ => {
-      command.execute(path, data).doFinally(_ => {
+    command.execute("/tests1", None).subscribe(_ => {
+      command.execute(path, Option(data)).doFinally(_ => {
         zkClient.close()
         shutdownServer()
       }).subscribe(a => a should equal(path))
     })
-  }
-}
-
-class NodeTest extends BaseTest {
-  "Path2Node" should "success" in {
-    val pa = List("dis", "h2", "m5", "ui")
-    val nd = Node.path2Node(pa, "hello")
-    println(nd)
   }
 }

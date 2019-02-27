@@ -73,10 +73,9 @@ class ConnectComponent(cf: ZkClientWrapper => Unit) {
 
 class NumberDocument extends PlainDocument {
   override def insertString(offs: Int, str: String, a: AttributeSet): Unit = {
-    if (!Character.isDigit(str.charAt(0))) return
+    if (!Character.isDigit(str.charAt(0))){}
     else {
       super.insertString(offs, str, a)
-      return
     }
   }
 }

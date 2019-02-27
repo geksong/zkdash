@@ -44,41 +44,39 @@ class TreeMouseListener(source: JTree) extends MouseListener {
   val searchMenu = new JMenuItem("Search")
 
   searchMenu.addActionListener(e => {
-    val selNode = source.getLastSelectedPathComponent.asInstanceOf[DefaultMutableTreeNode]
-    println(s"select node ${selNode}")
-    //JOptionPane.showMessageDialog(source, "What are you doing now!!!", "Check check check", JOptionPane.QUESTION_MESSAGE)
     val iconPath = this.getClass.getClassLoader.getResource("zkdashicon.png").getFile
     val icon = new ImageIcon(iconPath)
     icon.setImage(icon.getImage.getScaledInstance(80, 80, Image.SCALE_DEFAULT))
-    val searchPattern = JOptionPane.showInputDialog(source, "Search for", "Search", JOptionPane.QUESTION_MESSAGE, icon, null, "")
+    val searchPattern = JOptionPane.showInputDialog(source, "Search for", "Search", JOptionPane.QUESTION_MESSAGE, icon, None.orNull, "")
     Option(searchPattern).map(a => a.toString).foreach(a => {
       val treeModel = source.getModel
       val root = treeModel.getRoot.asInstanceOf[DefaultMutableTreeNode]
       val rootPath = new TreePath(root)
       val searchedPath = findInPath(treeModel, rootPath, a)
-      if(null != searchedPath) {
-        source.setSelectionPath(searchedPath)
-        source.scrollPathToVisible(searchedPath)
-      }
+      Option(searchedPath).foreach(a => {
+        source.setSelectionPath(a)
+        source.scrollPathToVisible(a)
+      })
     })
 
     def findInPath(treeModel: TreeModel, treePath: TreePath, str: String): TreePath = {
-      val obj = treePath.getLastPathComponent
-      if(null == obj) {
-        return null
+      val objOp = Option(treePath.getLastPathComponent)
+      if(objOp.isEmpty) {
+        objOp.orNull
       }
+      val obj = objOp.get
       val path = obj.toString
       if(path == s"/${str}".replaceAll("//", "/")) {
-        return treePath
+        treePath
       }else {
         val chCount = treeModel.getChildCount(obj)
-        for(i <- 0 until chCount) {
+        val lsSch = (0 until chCount).map(i => {
           val ch = treeModel.getChild(obj, i)
           val chPath = treePath.pathByAddingChild(ch)
           val serChPath = findInPath(treeModel, chPath, str)
-          if(null != serChPath) return serChPath
-        }
-        return null
+          Option(serChPath)
+        }).filter(_.nonEmpty).map(_.get)
+        if(lsSch.isEmpty) None.orNull else lsSch.head
       }
     }
   })

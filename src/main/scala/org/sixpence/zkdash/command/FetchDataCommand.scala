@@ -11,11 +11,8 @@ class FetchDataCommand(zkCli: ZkClient) {
   def execute(path: String): Mono[PathData] = {
     Mono.create(sink => {
       val creationTime = zkCli.getCreationTime(path)
-      var data: Any = zkCli.readData(path)
-      if(null == data) {
-        data = "该节点无数据"
-      }
-      sink.success(PathData(path, creationTime, data))
+      val rd: Any =  zkCli.readData(path)
+      sink.success(PathData(path, creationTime, Option(rd).getOrElse("该节点无数据")))
     })
   }
 }

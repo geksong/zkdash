@@ -7,6 +7,8 @@ import org.scalatest.FlatSpec
 import org.sixpence.zkdash.{BaseTest, TmpZkLocalServer}
 import org.slf4j.LoggerFactory
 
+import scala.util.Try
+
 /**
   * @author geksong
   * Created by geksong on 2019/2/22.
@@ -16,23 +18,23 @@ class LsCommandTest extends BaseTest{
 
   "LsCommand" should "list child paths when path exists" in {
     initServer(initCli => {
-      try {
+      Try{
         initCli.deleteRecursive("/d34")
         initCli.deleteRecursive("/url")
-      }catch {
+      }.recover({
         case e: ZkNoNodeException =>
         case _: Throwable =>
           shutdownServer()
           log.error("init zk server delete path node error")
           sys.exit(0)
-      }
+      })
 
-      initCli.create("/d34", null, CreateMode.PERSISTENT)
-      initCli.create("/url", null, CreateMode.PERSISTENT)
-      initCli.create("/d34/com.dis.soa.consumer.cart.center.api.IMaService", null, CreateMode.PERSISTENT)
+      initCli.create("/d34", None.orNull, CreateMode.PERSISTENT)
+      initCli.create("/url", None.orNull, CreateMode.PERSISTENT)
+      initCli.create("/d34/com.dis.soa.consumer.cart.center.api.IMaService", None.orNull, CreateMode.PERSISTENT)
     })
 
-    val zkCli = new ZkClient(ZKSERVER, CONNECTION_TIMEOUT)
+    val zkCli = new ZkClient(zkServer, connectionTimeout)
     val lsC = new LsCommand(zkCli)
     val parentPath = "/d34"
     val childs = lsC.execute(parentPath)

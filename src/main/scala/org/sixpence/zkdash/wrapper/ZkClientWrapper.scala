@@ -6,6 +6,8 @@ import org.I0Itec.zkclient.ZkClient
 import org.I0Itec.zkclient.exception.ZkMarshallingError
 import org.I0Itec.zkclient.serialize.ZkSerializer
 
+import scala.util.Try
+
 /**
   * @author geksong
   * Created by geksong on 2019/2/25.
@@ -21,32 +23,27 @@ class ZkClientWrapper(zkServers: String, connectionTimeout: Int) extends ZkClien
 }
 
 class DefineSerializableSerializer extends ZkSerializer {
-  override def serialize(data: Any): Array[Byte] = try {
-    val byteArrayOS = new ByteArrayOutputStream
-    val stream = new ObjectOutputStream(byteArrayOS)
-    stream.writeObject(data)
-    stream.close()
-    byteArrayOS.toByteArray
-  } catch {
-    case e: IOException =>
-      throw new ZkMarshallingError(e)
+  override def serialize(data: Any): Array[Byte] = {
+    val t = Try{
+      val byteArrayOS = new ByteArrayOutputStream
+      val stream = new ObjectOutputStream(byteArrayOS)
+      stream.writeObject(data)
+      stream.close()
+      byteArrayOS.toByteArray
+    }
+    if(t.isSuccess) t.get else throw new ZkMarshallingError(t.failed.get)
   }
 
-  override def deserialize(bytes: Array[Byte]): AnyRef = try {
-    if(null == bytes || bytes.length <= 0) return null
-    val bais = new ByteArrayInputStream(bytes)
-    try {
-      val ois = new ObjectInputStream(bais)
-      ois.readObject()
-    }catch {
-      case th: Throwable =>
-        //th.printStackTrace()
-        new String(bytes)
+  override def deserialize(bytes: Array[Byte]): AnyRef = {
+    val t = Try{
+      Option(bytes) match {
+        case None => None.orNull
+        case Some(v) if v.length <= 0 => None.orNull
+        case Some(v) =>
+          val t1 = Try{new ObjectInputStream(new ByteArrayInputStream(v)).readObject()}
+          if(t1.isSuccess) t1.get else new String(v)
+      }
     }
-  } catch {
-    case e: ClassNotFoundException =>
-      throw new ZkMarshallingError("Unable to find object class.", e)
-    case e: IOException =>
-      throw new ZkMarshallingError(e)
+    if(t.isSuccess) t.get else throw new ZkMarshallingError(t.failed.get)
   }
 }

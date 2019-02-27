@@ -1,6 +1,6 @@
 package org.sixpence.zkdash.view.component
 
-import java.awt.{Dimension, Image}
+import java.awt.{Dimension, FlowLayout, Image}
 import java.awt.event.{ActionEvent, ActionListener, MouseEvent, MouseListener}
 
 import javax.swing.event._
@@ -16,7 +16,9 @@ import org.slf4j.LoggerFactory
 class NodeComponent(lsCommand: LsCommand, fetchDataCommand: FetchDataCommand, cf: PathData => Unit) {
   private[this] val top = new DefaultMutableTreeNode("/")
 
-  def build(): JScrollPane = {
+  def build(): JPanel = {
+    val allPan = new JPanel()
+    allPan.setLayout(new BoxLayout(allPan, BoxLayout.Y_AXIS))
     val tree = new JTree(top)
     tree.addTreeSelectionListener(e => {
       val selNode: DefaultMutableTreeNode = e.getPath.getLastPathComponent.asInstanceOf[DefaultMutableTreeNode]
@@ -36,7 +38,17 @@ class NodeComponent(lsCommand: LsCommand, fetchDataCommand: FetchDataCommand, cf
     val treeScroll = new JScrollPane(tree)
     treeScroll.setPreferredSize(new Dimension(250, 400))
     treeScroll.setMinimumSize(new Dimension(250, 200))
-    treeScroll
+
+    val searchPan = new JPanel()
+    searchPan.setLayout(new BoxLayout(searchPan, BoxLayout.X_AXIS))
+    val textField = new JTextField("")
+    val sechBut = new JButton("Search")
+    searchPan.add(textField)
+    searchPan.add(sechBut)
+
+    allPan.add(searchPan)
+    allPan.add(treeScroll)
+    allPan
   }
 }
 

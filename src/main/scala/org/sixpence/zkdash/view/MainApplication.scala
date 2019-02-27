@@ -11,6 +11,7 @@ import org.sixpence.zkdash.view.component.DashFrame
 object MainApplication {
   def main(args: Array[String]): Unit = {
 
+    UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName)
 
     SwingUtilities.invokeLater(() => {
       new DashFrame()

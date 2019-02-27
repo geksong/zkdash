@@ -7,6 +7,7 @@ import javax.swing.event._
 import javax.swing.{ImageIcon, _}
 import javax.swing.tree.{DefaultMutableTreeNode, TreeModel, TreePath}
 import org.sixpence.zkdash.command.{FetchDataCommand, LsCommand, PathData}
+import org.slf4j.LoggerFactory
 
 /**
   * @author geksong
@@ -40,6 +41,7 @@ class NodeComponent(lsCommand: LsCommand, fetchDataCommand: FetchDataCommand, cf
 }
 
 class TreeMouseListener(source: JTree) extends MouseListener {
+  private[this] val log = LoggerFactory.getLogger(classOf[TreeMouseListener])
   val popupMenu = new JPopupMenu()
   val searchMenu = new JMenuItem("Search")
 
@@ -61,23 +63,21 @@ class TreeMouseListener(source: JTree) extends MouseListener {
 
     def findInPath(treeModel: TreeModel, treePath: TreePath, str: String): TreePath = {
       val objOp = Option(treePath.getLastPathComponent)
-      if(objOp.isEmpty) {
-        objOp.orNull
-      }
-      val obj = objOp.get
-      val path = obj.toString
-      if(path == s"/${str}".replaceAll("//", "/")) {
-        treePath
-      }else {
-        val chCount = treeModel.getChildCount(obj)
-        val lsSch = (0 until chCount).map(i => {
-          val ch = treeModel.getChild(obj, i)
-          val chPath = treePath.pathByAddingChild(ch)
-          val serChPath = findInPath(treeModel, chPath, str)
-          Option(serChPath)
-        }).filter(_.nonEmpty).map(_.get)
-        if(lsSch.isEmpty) None.orNull else lsSch.head
-      }
+      objOp.map(obj => {
+        val path = obj.toString
+        if(path == s"/${str}".replaceAll("//", "/")) {
+          treePath
+        }else {
+          val chCount = treeModel.getChildCount(obj)
+          val lsSch = (0 until chCount).map(i => {
+            val ch = treeModel.getChild(obj, i)
+            val chPath = treePath.pathByAddingChild(ch)
+            val serChPath = findInPath(treeModel, chPath, str)
+            Option(serChPath)
+          }).filter(_.nonEmpty).map(_.get)
+          if(lsSch.isEmpty) None.orNull else lsSch.head
+        }
+      }).getOrElse(None.orNull)
     }
   })
 

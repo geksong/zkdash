@@ -55,15 +55,11 @@ class ConnectComponent(cf: ZkClientWrapper => Unit) {
     val conButton = new JButton("Connect")
     conButton.setMnemonic(KeyEvent.VK_C)
     conButton.addActionListener(ae => {
-      //connect to zk
-      val ip = zkIpTextField.getText
-      val port = zkPortTextField.getText
-      if(null != ip && "" != ip && null != port && "" != port) {
-        val zkServer = s"${ip}:${port}"
+      Option(zkIpTextField.getText).zip(Option(zkPortTextField.getText)).map(t => s"${t._1}:${t._2}").foreach(zkServer => {
         val zkClient = new ZkClientWrapper(zkServer)
         sys.runtime.addShutdownHook(new Thread(() => zkClient.close()))
         cf(zkClient)
-      }
+      })
     })
     contentPannel.add(conButton, gbc)
 

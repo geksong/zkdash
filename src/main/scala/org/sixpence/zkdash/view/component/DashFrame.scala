@@ -4,13 +4,14 @@ import java.awt.event.{ActionEvent, KeyEvent}
 import java.awt.Toolkit
 
 import javax.swing._
-import org.sixpence.zkdash.wrapper.ZkClientWrapper
+import org.slf4j.LoggerFactory
 
 /**
   * @author geksong
   * Created by geksong on 2019/2/26.
   */
 class DashFrame(title: String) extends JFrame(title) {
+  private[this] val log = LoggerFactory.getLogger(classOf[DashFrame])
   def this() = {
     this("ZkDash")
     init()
@@ -18,7 +19,8 @@ class DashFrame(title: String) extends JFrame(title) {
   def init() {
     val screenSize = Toolkit.getDefaultToolkit.getScreenSize
     this.setLocation(screenSize.width / 3, screenSize.height / 4)
-    val imI = new ImageIcon(this.getClass.getClassLoader.getResource("zkdashicon.png").getFile)
+    val iconFile = this.getClass.getClassLoader.getResource("zkdashicon.png").getFile
+    val imI = new ImageIcon(iconFile)
     this.setIconImage(imI.getImage)
     this.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE)
 

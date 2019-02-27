@@ -41,7 +41,7 @@ class DefineSerializableSerializer extends ZkSerializer {
         case Some(v) if v.length <= 0 => None.orNull
         case Some(v) =>
           val t1 = Try{new ObjectInputStream(new ByteArrayInputStream(v)).readObject()}
-          if(t1.isSuccess) t1.get else new String(v)
+          t1.getOrElse(new String(v))
       }
     }
     if(t.isSuccess) t.get else throw new ZkMarshallingError(t.failed.get)

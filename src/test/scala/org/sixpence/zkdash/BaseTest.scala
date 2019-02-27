@@ -1,9 +1,7 @@
 package org.sixpence.zkdash
 
 import org.I0Itec.zkclient.{IDefaultNameSpace, ZkServer}
-import org.apache.zookeeper.CreateMode
 import org.scalatest.{FlatSpec, Matchers}
-import org.slf4j.LoggerFactory
 
 /**
   * @author geksong

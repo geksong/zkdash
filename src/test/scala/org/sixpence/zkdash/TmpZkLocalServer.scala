@@ -7,10 +7,9 @@ import org.I0Itec.zkclient.{IDefaultNameSpace, ZkServer}
   * Created by geksong on 2019/2/22.
   */
 case class TmpZkLocalServer(port: Int, dataPath: String, logPath: String, defaultNameSpace: IDefaultNameSpace) {
-  private[this] var zkServer: ZkServer = _
+  private[this] val zkServer: ZkServer = new ZkServer(dataPath, logPath, defaultNameSpace, port)
 
   def start = {
-    zkServer = new ZkServer(dataPath, logPath, defaultNameSpace, port)
     zkServer.start()
   }
 

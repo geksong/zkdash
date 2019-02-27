@@ -6,4 +6,5 @@
 [ZkDash](https://github.com/geksong/zkdash) is an [zookeeper](https://zookeeper.apache.org/) path and data gui browser。Implement by swing and [sgroschupf zkclient](https://github.com/sgroschupf/zkclient)
 
 ## Get Start
-<iframe height=498 width=510 src='http://player.youku.com/embed/XNDA3OTk2ODg4OA==' frameborder=0 'allowfullscreen'></iframe> 
+
+[Demo video](http://player.youku.com/embed/XNDA3OTk2ODg4OA==)

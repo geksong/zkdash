@@ -1,13 +1,11 @@
 package org.sixpence.zkdash.view.component
 
-import java.awt.{Dimension, FlowLayout, Image}
-import java.awt.event.{ActionEvent, ActionListener, MouseEvent, MouseListener}
+import java.awt._
+import java.awt.event._
 
-import javax.swing.event._
 import javax.swing.{ImageIcon, _}
 import javax.swing.tree.{DefaultMutableTreeNode, TreeModel, TreePath}
 import org.sixpence.zkdash.command.{FetchDataCommand, LsCommand, PathData}
-import org.slf4j.LoggerFactory
 
 /**
   * @author geksong
@@ -17,8 +15,8 @@ class NodeComponent(lsCommand: LsCommand, fetchDataCommand: FetchDataCommand, cf
   private[this] val top = new DefaultMutableTreeNode("/")
 
   def build(): JPanel = {
-    val allPan = new JPanel()
-    allPan.setLayout(new BoxLayout(allPan, BoxLayout.Y_AXIS))
+    val allPan = new JPanel(new GridBagLayout)
+    val gbc = new GridBagConstraints()
     val tree = new JTree(top)
     tree.addTreeSelectionListener(e => {
       val selNode: DefaultMutableTreeNode = e.getPath.getLastPathComponent.asInstanceOf[DefaultMutableTreeNode]
@@ -33,8 +31,6 @@ class NodeComponent(lsCommand: LsCommand, fetchDataCommand: FetchDataCommand, cf
       fetchDataCommand.execute(pa).subscribe(a => cf(a))
     })
 
-    tree.addMouseListener(new TreeMouseListener(tree))
-
     val treeScroll = new JScrollPane(tree)
     treeScroll.setPreferredSize(new Dimension(250, 400))
     treeScroll.setMinimumSize(new Dimension(250, 200))
@@ -43,16 +39,78 @@ class NodeComponent(lsCommand: LsCommand, fetchDataCommand: FetchDataCommand, cf
     searchPan.setLayout(new BoxLayout(searchPan, BoxLayout.X_AXIS))
     val textField = new JTextField("")
     textField.enableInputMethods(true)
+    textField.addKeyListener(new TreeSearchListener(tree, textField))
+
     val sechBut = new JButton("Search")
+    sechBut.addActionListener(new TreeSearchListener(tree, textField))
     searchPan.add(textField)
     searchPan.add(sechBut)
 
-    allPan.add(searchPan)
-    allPan.add(treeScroll)
+    gbc.fill = GridBagConstraints.BOTH
+    gbc.gridheight = 1
+    gbc.weightx = 1
+    gbc.gridx = 0
+    gbc.gridy = 0
+    allPan.add(searchPan, gbc)
+    gbc.fill = GridBagConstraints.BOTH
+    gbc.gridheight = 1
+    gbc.weightx = 1
+    gbc.weighty = 1
+    gbc.gridx = 0
+    gbc.gridy = 1
+    allPan.add(treeScroll, gbc)
     allPan
   }
 }
 
+
+class TreeSearchListener(source: JTree, searchField: JTextField) extends KeyListener with ActionListener {
+  override def keyTyped(e: KeyEvent): Unit = {}
+
+  override def keyPressed(e: KeyEvent): Unit = {
+    if(e.getKeyCode == KeyEvent.VK_ENTER) handleSearch()
+  }
+
+  override def keyReleased(e: KeyEvent): Unit = {}
+
+  override def actionPerformed(e: ActionEvent): Unit = {
+    handleSearch()
+  }
+
+  def handleSearch() = {
+    val seachStr = searchField.getText
+    Option(seachStr).foreach(a => {
+      val treeModel = source.getModel
+      val root = treeModel.getRoot.asInstanceOf[DefaultMutableTreeNode]
+      val rootPath = new TreePath(root)
+      val searchedPath = findInPath(treeModel, rootPath, a)
+      Option(searchedPath).foreach(a => {
+        source.setSelectionPath(a)
+        source.scrollPathToVisible(a)
+      })
+    })
+  }
+
+  def findInPath(treeModel: TreeModel, treePath: TreePath, str: String): TreePath = {
+    val objOp = Option(treePath.getLastPathComponent)
+    objOp.map(obj => {
+      val path = obj.toString
+      if(path == s"/${str}".replaceAll("//", "/")) {
+        treePath
+      }else {
+        val chCount = treeModel.getChildCount(obj)
+        val lsSch = (0 until chCount).map(i => {
+          val ch = treeModel.getChild(obj, i)
+          val chPath = treePath.pathByAddingChild(ch)
+          val serChPath = findInPath(treeModel, chPath, str)
+          Option(serChPath)
+        }).filter(_.nonEmpty).map(_.get)
+        if(lsSch.isEmpty) None.orNull else lsSch.head
+      }
+    }).getOrElse(None.orNull)
+  }
+}
+/*
 class TreeMouseListener(source: JTree) extends MouseListener {
   private[this] val log = LoggerFactory.getLogger(classOf[TreeMouseListener])
   val popupMenu = new JPopupMenu()
@@ -109,4 +167,4 @@ class TreeMouseListener(source: JTree) extends MouseListener {
   override def mouseEntered(e: MouseEvent): Unit = {}
 
   override def mouseExited(e: MouseEvent): Unit = {}
-}
+}*/

@@ -48,7 +48,7 @@ class DashComponent(zkClient: ZkClientWrapper) {
     gbConstraints.fill = GridBagConstraints.BOTH
     gbConstraints.gridwidth = 3
     gbConstraints.gridheight = 3
-    gbConstraints.weightx = 1
+    gbConstraints.weightx = 0
     gbConstraints.weighty = 1
     gbConstraints.gridx = 0
     gbConstraints.gridy = 0

@@ -42,6 +42,7 @@ class NodeComponent(lsCommand: LsCommand, fetchDataCommand: FetchDataCommand, cf
     val searchPan = new JPanel()
     searchPan.setLayout(new BoxLayout(searchPan, BoxLayout.X_AXIS))
     val textField = new JTextField("")
+    textField.enableInputMethods(true)
     val sechBut = new JButton("Search")
     searchPan.add(textField)
     searchPan.add(sechBut)

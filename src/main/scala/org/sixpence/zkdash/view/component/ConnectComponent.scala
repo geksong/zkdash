@@ -33,6 +33,7 @@ class ConnectComponent(cf: ZkClientWrapper => Unit) {
     gbc.gridx = 2
     gbc.gridy = 1
     val zkIpTextField = new JTextField("localhost")
+    zkIpTextField.enableInputMethods(true)
     contentPannel.add(zkIpTextField, gbc)
 
     gbc.fill = GridBagConstraints.BOTH
@@ -43,6 +44,7 @@ class ConnectComponent(cf: ZkClientWrapper => Unit) {
     gbc.gridx = 3
     gbc.gridy = 1
     val zkPortTextField = new JTextField(new NumberDocument, "2181", 0)
+    zkPortTextField.enableInputMethods(true)
     contentPannel.add(zkPortTextField, gbc)
 
     gbc.fill = GridBagConstraints.BOTH

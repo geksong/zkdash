@@ -42,12 +42,18 @@ class DashFrame(title: String) extends JFrame(title) {
       bc.weighty = 1
       sessionPanel.add(new ConnectComponent(zkCli => {
         sessionPanel.removeAll()
-        sessionPanel.add(new DashComponent(zkCli).build(), bc)
-      }).build(), bc)
+        sessionPanel.add(new DashComponent(zkCli), bc)
+      }), bc)
       val index = sessionCount.getAndAdd(1)
       tabPanel.add(s"session#${index + 1}", sessionPanel)
-      tabPanel.setTabComponentAt(index, new ButtonTabPanel(tabPanel, {
+      tabPanel.setTabComponentAt(tabPanel.indexOfComponent(sessionPanel), new ButtonTabPanel(tabPanel, {
         //TODO close connection when tab be closed
+        sessionPanel.getComponents.foreach(a => {
+          a match {
+            case d: DashComponent => d.release()
+            case _ =>
+          }
+        })
       }))
     })
     fileMenu.add(fileMenuItem)
@@ -77,12 +83,18 @@ class DashFrame(title: String) extends JFrame(title) {
     gbc.weighty = 1
     tab1Panel.add(new ConnectComponent(zkCli => {
       tab1Panel.removeAll()
-      tab1Panel.add(new DashComponent(zkCli).build(), gbc)
-    }).build(), gbc)
+      tab1Panel.add(new DashComponent(zkCli), gbc)
+    }), gbc)
     val sessIdx = sessionCount.getAndAdd(1)
     tabPanel.add(s"session#${sessIdx + 1}", tab1Panel)
-    tabPanel.setTabComponentAt(sessIdx, new ButtonTabPanel(tabPanel, {
+    tabPanel.setTabComponentAt(tabPanel.indexOfComponent(tab1Panel), new ButtonTabPanel(tabPanel, {
       //TODO close connection when tab be closed
+      tab1Panel.getComponents.foreach(a => {
+        a match {
+          case d: DashComponent => d.release()
+          case _ =>
+        }
+      })
     }))
 
     this.getContentPane add tabPanel
@@ -139,8 +151,8 @@ class ButtonTabPanel(tabPanel: JTabbedPane, closeCallback: => Unit) extends JPan
     override def actionPerformed(e: ActionEvent): Unit = {
       val i = tabPanel.indexOfTabComponent(ButtonTabPanel.this)
       if (i != -1) {
+        closeCallback
         tabPanel.remove(i)
-        closeCallback()
       }
     }
 

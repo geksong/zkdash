@@ -7,4 +7,4 @@
 
 ## Get Start
 
-[![usage](https://github.com/geksong/zkdash/blob/doc/zkvideo.png)](http://player.youku.com/embed/XNDA3OTk2ODg4OA==)
+[![usage](https://github.com/geksong/zkdash/blob/master/doc/zkvideo.png?raw=true)](http://player.youku.com/embed/XNDA3OTk2ODg4OA==)

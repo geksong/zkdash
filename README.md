@@ -3,4 +3,8 @@
 ![GitHub tag (latest SemVer)](https://img.shields.io/github/tag/geksong/zkdash.svg)
 ![GitHub release](https://img.shields.io/github/release/geksong/zkdash.svg)
 
-[ZkDash](https://github.com/geksong/zkdash) is an [zookeeper](https://zookeeper.apache.org/) path and data gui browser。Implement by swing and [sgroschupf zkclient](https://github.com/sgroschupf/zkclient) 
+[ZkDash](https://github.com/geksong/zkdash) is an [zookeeper](https://zookeeper.apache.org/) path and data gui browser。Implement by swing and [sgroschupf zkclient](https://github.com/sgroschupf/zkclient)
+
+## Get Start
+
+[![usage](https://github.com/geksong/zkdash/blob/doc/zkvideo.png)](http://player.youku.com/embed/XNDA3OTk2ODg4OA==)

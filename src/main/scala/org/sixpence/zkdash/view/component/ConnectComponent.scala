@@ -7,6 +7,7 @@ import java.awt.{GridBagConstraints, GridBagLayout, GridLayout, Toolkit}
 import javax.swing.text.{AttributeSet, PlainDocument}
 import javax.swing.{JButton, JLabel, JPanel, JTextField}
 import org.sixpence.zkdash.wrapper.ZkClientWrapper
+import reactor.core.publisher.Mono
 
 /**
   * @author geksong
@@ -115,6 +116,10 @@ class ConnectComponent(cf: ZkClientWrapper => Unit) extends JPanel(new GridBagLa
   })
   this.add(conButton, gbc)
 
+}
+
+object ConnectComponent {
+  def apply(cf: ZkClientWrapper => Unit): Mono[ConnectComponent] = Mono.create(sink => sink.success(new ConnectComponent(cf)))
 }
 
 class NumberDocument extends PlainDocument {

@@ -41,10 +41,13 @@ class DashFrame(title: String) extends JFrame(title) {
       bc.fill = GridBagConstraints.BOTH
       bc.weightx = 1
       bc.weighty = 1
-      sessionPanel.add(new ConnectComponent(zkCli => {
+
+      ConnectComponent(zkCli => {
         sessionPanel.removeAll()
         sessionPanel.add(new DashComponent(zkCli), bc)
-      }), bc)
+      }).subscribe(a => {
+        sessionPanel.add(a, bc)
+      })
       val index = sessionCount.getAndAdd(1)
       tabPanel.add(s"session#${index + 1}", sessionPanel)
       tabPanel.setTabComponentAt(tabPanel.indexOfComponent(sessionPanel), new ButtonTabPanel(tabPanel, {
@@ -79,10 +82,12 @@ class DashFrame(title: String) extends JFrame(title) {
     gbc.fill = GridBagConstraints.BOTH
     gbc.weightx = 1
     gbc.weighty = 1
-    tab1Panel.add(new ConnectComponent(zkCli => {
+    ConnectComponent(zkCli => {
       tab1Panel.removeAll()
       tab1Panel.add(new DashComponent(zkCli), gbc)
-    }), gbc)
+    }).subscribe(a => {
+      tab1Panel.add(a, gbc)
+    })
     val sessIdx = sessionCount.getAndAdd(1)
     tabPanel.add(s"session#${sessIdx + 1}", tab1Panel)
     tabPanel.setTabComponentAt(tabPanel.indexOfComponent(tab1Panel), new ButtonTabPanel(tabPanel, {

@@ -29,6 +29,7 @@ class DashFrame(title: String) extends JFrame(title) {
     this.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE)
 
     val tabPanel = new JTabbedPane()
+    tabPanel.setPreferredSize(new Dimension(500, 400))
 
     val menuBar = new JMenuBar()
     val fileMenu = new JMenu("File")
@@ -47,13 +48,10 @@ class DashFrame(title: String) extends JFrame(title) {
       val index = sessionCount.getAndAdd(1)
       tabPanel.add(s"session#${index + 1}", sessionPanel)
       tabPanel.setTabComponentAt(tabPanel.indexOfComponent(sessionPanel), new ButtonTabPanel(tabPanel, {
-        //TODO close connection when tab be closed
-        sessionPanel.getComponents.foreach(a => {
-          a match {
+        sessionPanel.getComponents.foreach({
             case d: DashComponent => d.release()
             case _ =>
-          }
-        })
+          })
       }))
     })
     fileMenu.add(fileMenuItem)
@@ -88,13 +86,10 @@ class DashFrame(title: String) extends JFrame(title) {
     val sessIdx = sessionCount.getAndAdd(1)
     tabPanel.add(s"session#${sessIdx + 1}", tab1Panel)
     tabPanel.setTabComponentAt(tabPanel.indexOfComponent(tab1Panel), new ButtonTabPanel(tabPanel, {
-      //TODO close connection when tab be closed
-      tab1Panel.getComponents.foreach(a => {
-        a match {
+      tab1Panel.getComponents.foreach({
           case d: DashComponent => d.release()
           case _ =>
-        }
-      })
+        })
     }))
 
     this.getContentPane add tabPanel

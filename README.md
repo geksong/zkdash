@@ -22,5 +22,5 @@ $ unzip zkdash-$version.zip
 - Jar file will be build in ```target``` directory
 - And then you can ```java -jar zkdash-$version.jar```
 
-
-[![usage](https://github.com/geksong/zkdash/blob/master/doc/video1.0.1.png?raw=true)](http://player.youku.com/embed/XNDA4MjE1OTc0MA==)
+## Screenshot
+[usage video](http://player.youku.com/embed/XNDA4MjE1OTc0MA==)

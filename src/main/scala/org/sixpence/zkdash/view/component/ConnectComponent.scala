@@ -1,7 +1,8 @@
 package org.sixpence.zkdash.view.component
 
-import java.awt.event.{ActionEvent, ActionListener, KeyEvent}
-import java.awt.{GridBagConstraints, GridBagLayout, GridLayout}
+import java.awt.datatransfer.{DataFlavor, StringSelection, Transferable}
+import java.awt.event._
+import java.awt.{GridBagConstraints, GridBagLayout, GridLayout, Toolkit}
 
 import javax.swing.text.{AttributeSet, PlainDocument}
 import javax.swing.{JButton, JLabel, JPanel, JTextField}
@@ -33,6 +34,28 @@ class ConnectComponent(cf: ZkClientWrapper => Unit) extends JPanel(new GridBagLa
   gbc.gridy = 1
   val zkIpTextField = new JTextField("localhost")
   zkIpTextField.enableInputMethods(true)
+  zkIpTextField.addKeyListener(new KeyListener {
+    override def keyTyped(e: KeyEvent): Unit = {}
+
+    override def keyPressed(e: KeyEvent): Unit = {}
+
+    override def keyReleased(e: KeyEvent): Unit = {
+      if ((e.getModifiersEx == InputEvent.META_DOWN_MASK && e.getKeyCode == KeyEvent.VK_V)
+        || (e.getModifiersEx == InputEvent.CTRL_DOWN_MASK && e.getKeyCode == KeyEvent.VK_V)) {
+        val clipboard = Toolkit.getDefaultToolkit.getSystemClipboard
+        val trans: Transferable = clipboard.getContents(None.orNull)
+        val setIpText: String => Unit = zkIpTextField.setText
+        Option(trans).filter(a => a.isDataFlavorSupported(DataFlavor.stringFlavor))
+          .map(a => a.getTransferData(DataFlavor.stringFlavor).asInstanceOf[String])
+          .foreach(setIpText)
+      }else if((e.getModifiersEx == InputEvent.META_DOWN_MASK && e.getKeyCode == KeyEvent.VK_C)
+        || (e.getModifiersEx == InputEvent.CTRL_DOWN_MASK && e.getKeyCode == KeyEvent.VK_C)) {
+        val clipboard = Toolkit.getDefaultToolkit.getSystemClipboard
+        val ipStr = zkIpTextField.getText
+        clipboard.setContents(new StringSelection(ipStr), null)
+      }
+    }
+  })
   this.add(zkIpTextField, gbc)
 
   gbc.fill = GridBagConstraints.BOTH
@@ -44,6 +67,28 @@ class ConnectComponent(cf: ZkClientWrapper => Unit) extends JPanel(new GridBagLa
   gbc.gridy = 1
   val zkPortTextField = new JTextField(new NumberDocument, "2181", 0)
   zkPortTextField.enableInputMethods(true)
+  zkPortTextField.addKeyListener(new KeyListener {
+    override def keyTyped(e: KeyEvent): Unit = {}
+
+    override def keyPressed(e: KeyEvent): Unit = {}
+
+    override def keyReleased(e: KeyEvent): Unit = {
+      if ((e.getModifiersEx == InputEvent.META_DOWN_MASK && e.getKeyCode == KeyEvent.VK_V)
+        || (e.getModifiersEx == InputEvent.CTRL_DOWN_MASK && e.getKeyCode == KeyEvent.VK_V)) {
+        val clipboard = Toolkit.getDefaultToolkit.getSystemClipboard
+        val trans: Transferable = clipboard.getContents(None.orNull)
+        val setIpText: String => Unit = zkPortTextField.setText
+        Option(trans).filter(a => a.isDataFlavorSupported(DataFlavor.stringFlavor))
+          .map(a => a.getTransferData(DataFlavor.stringFlavor).asInstanceOf[String])
+          .foreach(setIpText)
+      }else if((e.getModifiersEx == InputEvent.META_DOWN_MASK && e.getKeyCode == KeyEvent.VK_C)
+        || (e.getModifiersEx == InputEvent.CTRL_DOWN_MASK && e.getKeyCode == KeyEvent.VK_C)) {
+        val clipboard = Toolkit.getDefaultToolkit.getSystemClipboard
+        val ipStr = zkPortTextField.getText
+        clipboard.setContents(new StringSelection(ipStr), null)
+      }
+    }
+  })
   this.add(zkPortTextField, gbc)
 
   gbc.fill = GridBagConstraints.BOTH

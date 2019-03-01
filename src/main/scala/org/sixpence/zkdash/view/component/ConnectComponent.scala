@@ -39,20 +39,23 @@ class ConnectComponent(cf: ZkClientWrapper => Unit) extends JPanel(new GridBagLa
 
     override def keyPressed(e: KeyEvent): Unit = {}
 
-    override def keyReleased(e: KeyEvent): Unit = {
-      if ((e.getModifiersEx == InputEvent.META_DOWN_MASK && e.getKeyCode == KeyEvent.VK_V)
-        || (e.getModifiersEx == InputEvent.CTRL_DOWN_MASK && e.getKeyCode == KeyEvent.VK_V)) {
-        val clipboard = Toolkit.getDefaultToolkit.getSystemClipboard
-        val trans: Transferable = clipboard.getContents(None.orNull)
-        val setIpText: String => Unit = zkIpTextField.setText
-        Option(trans).filter(a => a.isDataFlavorSupported(DataFlavor.stringFlavor))
-          .map(a => a.getTransferData(DataFlavor.stringFlavor).asInstanceOf[String])
-          .foreach(setIpText)
-      }else if((e.getModifiersEx == InputEvent.META_DOWN_MASK && e.getKeyCode == KeyEvent.VK_C)
-        || (e.getModifiersEx == InputEvent.CTRL_DOWN_MASK && e.getKeyCode == KeyEvent.VK_C)) {
-        val clipboard = Toolkit.getDefaultToolkit.getSystemClipboard
-        val ipStr = zkIpTextField.getText
-        clipboard.setContents(new StringSelection(ipStr), None.orNull)
+    override def keyReleased(ke: KeyEvent): Unit = {
+      ke match {
+        case e: KeyEvent if (e.getModifiersEx == InputEvent.META_DOWN_MASK && e.getKeyCode == KeyEvent.VK_V)
+          || (e.getModifiersEx == InputEvent.CTRL_DOWN_MASK && e.getKeyCode == KeyEvent.VK_V) =>
+          val clipboard = Toolkit.getDefaultToolkit.getSystemClipboard
+          val trans: Transferable = clipboard.getContents(None.orNull)
+          val setIpText: String => Unit = zkIpTextField.setText
+          Option(trans).filter(a => a.isDataFlavorSupported(DataFlavor.stringFlavor))
+            .map(a => a.getTransferData(DataFlavor.stringFlavor).asInstanceOf[String])
+            .foreach(setIpText)
+
+        case e: KeyEvent if (e.getModifiersEx == InputEvent.META_DOWN_MASK && e.getKeyCode == KeyEvent.VK_C)
+          || (e.getModifiersEx == InputEvent.CTRL_DOWN_MASK && e.getKeyCode == KeyEvent.VK_C) =>
+          val clipboard = Toolkit.getDefaultToolkit.getSystemClipboard
+          Option(zkIpTextField.getText).foreach(ipStr => clipboard.setContents(new StringSelection(ipStr), None.orNull))
+
+        case _ =>
       }
     }
   })
@@ -73,19 +76,22 @@ class ConnectComponent(cf: ZkClientWrapper => Unit) extends JPanel(new GridBagLa
     override def keyPressed(e: KeyEvent): Unit = {}
 
     override def keyReleased(e: KeyEvent): Unit = {
-      if ((e.getModifiersEx == InputEvent.META_DOWN_MASK && e.getKeyCode == KeyEvent.VK_V)
-        || (e.getModifiersEx == InputEvent.CTRL_DOWN_MASK && e.getKeyCode == KeyEvent.VK_V)) {
-        val clipboard = Toolkit.getDefaultToolkit.getSystemClipboard
-        val trans: Transferable = clipboard.getContents(None.orNull)
-        val setIpText: String => Unit = zkPortTextField.setText
-        Option(trans).filter(a => a.isDataFlavorSupported(DataFlavor.stringFlavor))
-          .map(a => a.getTransferData(DataFlavor.stringFlavor).asInstanceOf[String])
-          .foreach(setIpText)
-      }else if((e.getModifiersEx == InputEvent.META_DOWN_MASK && e.getKeyCode == KeyEvent.VK_C)
-        || (e.getModifiersEx == InputEvent.CTRL_DOWN_MASK && e.getKeyCode == KeyEvent.VK_C)) {
-        val clipboard = Toolkit.getDefaultToolkit.getSystemClipboard
-        val ipStr = zkPortTextField.getText
-        clipboard.setContents(new StringSelection(ipStr), None.orNull)
+      e match {
+        case h: KeyEvent if (h.getModifiersEx == InputEvent.META_DOWN_MASK && h.getKeyCode == KeyEvent.VK_V)
+          || (h.getModifiersEx == InputEvent.CTRL_DOWN_MASK && h.getKeyCode == KeyEvent.VK_V) =>
+          val clipboard = Toolkit.getDefaultToolkit.getSystemClipboard
+          val trans: Transferable = clipboard.getContents(None.orNull)
+          val setIpText: String => Unit = zkPortTextField.setText
+          Option(trans).filter(a => a.isDataFlavorSupported(DataFlavor.stringFlavor))
+            .map(a => a.getTransferData(DataFlavor.stringFlavor).asInstanceOf[String])
+            .foreach(setIpText)
+
+        case h: KeyEvent if (h.getModifiersEx == InputEvent.META_DOWN_MASK && h.getKeyCode == KeyEvent.VK_C)
+          || (h.getModifiersEx == InputEvent.CTRL_DOWN_MASK && h.getKeyCode == KeyEvent.VK_C) =>
+          val clipboard = Toolkit.getDefaultToolkit.getSystemClipboard
+          Option(zkPortTextField.getText).foreach(ipStr => clipboard.setContents(new StringSelection(ipStr), None.orNull))
+
+        case _ =>
       }
     }
   })

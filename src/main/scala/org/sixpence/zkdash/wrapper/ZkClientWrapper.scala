@@ -14,7 +14,7 @@ import scala.util.Try
   */
 class ZkClientWrapper(zkServers: String, connectionTimeout: Int) extends ZkClient(zkServers, connectionTimeout){
   def this(zkServers: String) = {
-    this(zkServers, 50000)
+    this(zkServers, 5000)
     this.setZkSerializer(new DefineSerializableSerializer)
   }
   def getServers(): String = {

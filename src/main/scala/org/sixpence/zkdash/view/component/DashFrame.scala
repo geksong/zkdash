@@ -105,7 +105,6 @@ class DashFrame(title: String) extends JFrame(title) {
   * @param layoutManager
   */
 class ButtonTabPanel(tabPanel: JTabbedPane, closeCallback: => Unit) extends JPanel(new FlowLayout(FlowLayout.LEFT, 0, 0)) {
-  if(null == tabPanel) throw new NullPointerException("tabPanel can't be null")
   setOpaque(false)
 
   val label = new JLabel(){

@@ -52,7 +52,7 @@ class ConnectComponent(cf: ZkClientWrapper => Unit) extends JPanel(new GridBagLa
         || (e.getModifiersEx == InputEvent.CTRL_DOWN_MASK && e.getKeyCode == KeyEvent.VK_C)) {
         val clipboard = Toolkit.getDefaultToolkit.getSystemClipboard
         val ipStr = zkIpTextField.getText
-        clipboard.setContents(new StringSelection(ipStr), null)
+        clipboard.setContents(new StringSelection(ipStr), None.orNull)
       }
     }
   })
@@ -85,7 +85,7 @@ class ConnectComponent(cf: ZkClientWrapper => Unit) extends JPanel(new GridBagLa
         || (e.getModifiersEx == InputEvent.CTRL_DOWN_MASK && e.getKeyCode == KeyEvent.VK_C)) {
         val clipboard = Toolkit.getDefaultToolkit.getSystemClipboard
         val ipStr = zkPortTextField.getText
-        clipboard.setContents(new StringSelection(ipStr), null)
+        clipboard.setContents(new StringSelection(ipStr), None.orNull)
       }
     }
   })

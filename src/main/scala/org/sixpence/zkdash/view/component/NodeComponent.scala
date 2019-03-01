@@ -1,13 +1,11 @@
 package org.sixpence.zkdash.view.component
 
-import java.awt.{Dimension, Image}
-import java.awt.event.{ActionEvent, ActionListener, MouseEvent, MouseListener}
+import java.awt._
+import java.awt.event._
 
-import javax.swing.event._
 import javax.swing.{ImageIcon, _}
 import javax.swing.tree.{DefaultMutableTreeNode, TreeModel, TreePath}
 import org.sixpence.zkdash.command.{FetchDataCommand, LsCommand, PathData}
-import org.slf4j.LoggerFactory
 
 /**
   * @author geksong
@@ -16,7 +14,9 @@ import org.slf4j.LoggerFactory
 class NodeComponent(lsCommand: LsCommand, fetchDataCommand: FetchDataCommand, cf: PathData => Unit) {
   private[this] val top = new DefaultMutableTreeNode("/")
 
-  def build(): JScrollPane = {
+  def build(): JPanel = {
+    val allPan = new JPanel(new GridBagLayout)
+    val gbc = new GridBagConstraints()
     val tree = new JTree(top)
     tree.addTreeSelectionListener(e => {
       val selNode: DefaultMutableTreeNode = e.getPath.getLastPathComponent.asInstanceOf[DefaultMutableTreeNode]
@@ -31,26 +31,55 @@ class NodeComponent(lsCommand: LsCommand, fetchDataCommand: FetchDataCommand, cf
       fetchDataCommand.execute(pa).subscribe(a => cf(a))
     })
 
-    tree.addMouseListener(new TreeMouseListener(tree))
-
     val treeScroll = new JScrollPane(tree)
     treeScroll.setPreferredSize(new Dimension(250, 400))
     treeScroll.setMinimumSize(new Dimension(250, 200))
-    treeScroll
+
+    val searchPan = new JPanel()
+    searchPan.setLayout(new BoxLayout(searchPan, BoxLayout.X_AXIS))
+    val textField = new JTextField("")
+    textField.enableInputMethods(true)
+    textField.addKeyListener(new TreeSearchListener(tree, textField))
+
+    val sechBut = new JButton("Search")
+    sechBut.addActionListener(new TreeSearchListener(tree, textField))
+    searchPan.add(textField)
+    searchPan.add(sechBut)
+
+    gbc.fill = GridBagConstraints.BOTH
+    gbc.gridheight = 1
+    gbc.weightx = 1
+    gbc.gridx = 0
+    gbc.gridy = 0
+    allPan.add(searchPan, gbc)
+    gbc.fill = GridBagConstraints.BOTH
+    gbc.gridheight = 1
+    gbc.weightx = 1
+    gbc.weighty = 1
+    gbc.gridx = 0
+    gbc.gridy = 1
+    allPan.add(treeScroll, gbc)
+    allPan
   }
 }
 
-class TreeMouseListener(source: JTree) extends MouseListener {
-  private[this] val log = LoggerFactory.getLogger(classOf[TreeMouseListener])
-  val popupMenu = new JPopupMenu()
-  val searchMenu = new JMenuItem("Search")
 
-  searchMenu.addActionListener(e => {
-    val iconPath = this.getClass.getClassLoader.getResource("zkdashicon.png").getFile
-    val icon = new ImageIcon(iconPath)
-    icon.setImage(icon.getImage.getScaledInstance(80, 80, Image.SCALE_DEFAULT))
-    val searchPattern = JOptionPane.showInputDialog(source, "Search for", "Search", JOptionPane.QUESTION_MESSAGE, icon, None.orNull, "")
-    Option(searchPattern).map(a => a.toString).foreach(a => {
+class TreeSearchListener(source: JTree, searchField: JTextField) extends KeyListener with ActionListener {
+  override def keyTyped(e: KeyEvent): Unit = {}
+
+  override def keyPressed(e: KeyEvent): Unit = {
+    if(e.getKeyCode == KeyEvent.VK_ENTER) handleSearch()
+  }
+
+  override def keyReleased(e: KeyEvent): Unit = {}
+
+  override def actionPerformed(e: ActionEvent): Unit = {
+    handleSearch()
+  }
+
+  def handleSearch() = {
+    val seachStr = searchField.getText
+    Option(seachStr).foreach(a => {
       val treeModel = source.getModel
       val root = treeModel.getRoot.asInstanceOf[DefaultMutableTreeNode]
       val rootPath = new TreePath(root)
@@ -60,40 +89,24 @@ class TreeMouseListener(source: JTree) extends MouseListener {
         source.scrollPathToVisible(a)
       })
     })
-
-    def findInPath(treeModel: TreeModel, treePath: TreePath, str: String): TreePath = {
-      val objOp = Option(treePath.getLastPathComponent)
-      objOp.map(obj => {
-        val path = obj.toString
-        if(path == s"/${str}".replaceAll("//", "/")) {
-          treePath
-        }else {
-          val chCount = treeModel.getChildCount(obj)
-          val lsSch = (0 until chCount).map(i => {
-            val ch = treeModel.getChild(obj, i)
-            val chPath = treePath.pathByAddingChild(ch)
-            val serChPath = findInPath(treeModel, chPath, str)
-            Option(serChPath)
-          }).filter(_.nonEmpty).map(_.get)
-          if(lsSch.isEmpty) None.orNull else lsSch.head
-        }
-      }).getOrElse(None.orNull)
-    }
-  })
-
-  popupMenu.add(searchMenu)
-
-  override def mouseClicked(e: MouseEvent): Unit = {}
-
-  override def mousePressed(e: MouseEvent): Unit = {
-    val path = source.getPathForLocation(e.getX, e.getY)
-    source.setSelectionPath(path)
-    if (e.getButton == 3) popupMenu.show(source, e.getX, e.getY)
   }
 
-  override def mouseReleased(e: MouseEvent): Unit = {}
-
-  override def mouseEntered(e: MouseEvent): Unit = {}
-
-  override def mouseExited(e: MouseEvent): Unit = {}
+  def findInPath(treeModel: TreeModel, treePath: TreePath, str: String): TreePath = {
+    val objOp = Option(treePath.getLastPathComponent)
+    objOp.map(obj => {
+      val path = obj.toString
+      if(path == s"/${str}".replaceAll("//", "/")) {
+        treePath
+      }else {
+        val chCount = treeModel.getChildCount(obj)
+        val lsSch = (0 until chCount).map(i => {
+          val ch = treeModel.getChild(obj, i)
+          val chPath = treePath.pathByAddingChild(ch)
+          val serChPath = findInPath(treeModel, chPath, str)
+          Option(serChPath)
+        }).filter(_.nonEmpty).map(_.get)
+        if(lsSch.isEmpty) None.orNull else lsSch.head
+      }
+    }).getOrElse(None.orNull)
+  }
 }

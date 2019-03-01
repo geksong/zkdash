@@ -13,9 +13,7 @@ class ServerStateInfoComponent(ssc: ServerStateInfoCommand) {
     ssc.execute().map(a => {
       val infoPanel = new JPanel()
       val serversLabel = new JLabel(s"Servers: ${a.address}", SwingConstants.LEFT)
-      //val listenersLabel = new JLabel(s"Listeners Count: ${a.numOfListeners}", SwingConstants.LEFT)
       infoPanel.add(serversLabel)
-      //infoPanel.add(listenersLabel)
       infoPanel
     })
   }

@@ -11,6 +11,8 @@ import org.sixpence.zkdash.view.component.DashFrame
 object MainApplication {
   def main(args: Array[String]): Unit = {
 
+    System.setProperty("java.awt.im.style", "on-the-spot")
+    UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName)
 
     SwingUtilities.invokeLater(() => {
       new DashFrame()

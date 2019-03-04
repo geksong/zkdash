@@ -5,6 +5,22 @@
 
 [ZkDash](https://github.com/geksong/zkdash) is an [zookeeper](https://zookeeper.apache.org/) path and data gui browser。Implement by swing and [sgroschupf zkclient](https://github.com/sgroschupf/zkclient)
 
-## Get Start
+## Quick Start
+#### Install by binary package
+- Download latest release version binary package from [here](https://github.com/geksong/zkdash/releases)
+- Unzip the downloaded zip file
+```
+$ unzip zkdash-$version.zip
+```
+- Make sure you have install JDK8+ and had set JAVA_HOME environment.
+- Run ```./zkdash.sh``` on Linux/Mac system, or run ```./zkdash.bat``` in Windows system.
 
-[![usage](https://github.com/geksong/zkdash/blob/master/doc/zkvideo.png?raw=true)](http://player.youku.com/embed/XNDA3OTk2ODg4OA==)
+#### Build from source
+- Git clone this project
+- Make sure you have install JDK8+ and Maven3+
+- Run ```mvn package``` in project root directory
+- Jar file will be build in ```target``` directory
+- And then you can ```java -jar zkdash-$version.jar```
+
+## Screenshot
+[usage video](http://player.youku.com/embed/XNDA4MjE1OTc0MA==)

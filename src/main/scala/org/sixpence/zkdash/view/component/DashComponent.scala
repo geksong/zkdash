@@ -5,6 +5,7 @@ import java.text.SimpleDateFormat
 
 import javax.swing._
 import org.sixpence.zkdash.command.{FetchDataCommand, LsCommand, ServerStateInfoCommand}
+import org.sixpence.zkdash.view.component.builder.GridBagConstraintsBuilder
 import org.sixpence.zkdash.wrapper.ZkClientWrapper
 
 /**
@@ -13,7 +14,6 @@ import org.sixpence.zkdash.wrapper.ZkClientWrapper
   */
 
 class DashComponent(zkClient: ZkClientWrapper) extends JPanel(new GridBagLayout) {
-  val gbConstraints = new GridBagConstraints()
 
   val nodeDataPane = new JEditorPane("text/html", "")
   nodeDataPane.setEditable(false)
@@ -21,54 +21,29 @@ class DashComponent(zkClient: ZkClientWrapper) extends JPanel(new GridBagLayout)
   nodeScroll.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS)
   nodeScroll.setPreferredSize(new Dimension(250, 145))
   nodeScroll.setMinimumSize(new Dimension(10, 100))
-  gbConstraints.fill = GridBagConstraints.BOTH
-  gbConstraints.gridwidth = 9
-  gbConstraints.gridheight = 1
-  gbConstraints.weightx = 1
-  gbConstraints.weighty = 1
-  gbConstraints.gridx = 3
-  gbConstraints.gridy = 4
-  this.add(nodeScroll, gbConstraints)
+  this.add(nodeScroll, GridBagConstraintsBuilder()
+    .fill(GridBagConstraints.BOTH).gridwidth(9).gridheight(1).weightx(1)
+    .weighty(1).gridx(3).gridy(4).build())
 
   val pathInfoPanel = new JPanel()
   pathInfoPanel.setLayout(new BoxLayout(pathInfoPanel, BoxLayout.X_AXIS))
   val pathLabel = new JLabel("Path: ")
-
   val pathTextArea = new JTextArea("/", 2, 50)
   pathTextArea.setEditable(false)
   val pathTextAreaScroll = new JScrollPane(pathTextArea, ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED, ScrollPaneConstants.HORIZONTAL_SCROLLBAR_ALWAYS)
   pathTextAreaScroll.setMinimumSize(new Dimension(100, 50))
   pathInfoPanel.add(pathLabel)
   pathInfoPanel.add(pathTextAreaScroll)
-  gbConstraints.fill = GridBagConstraints.BOTH
-  gbConstraints.gridwidth = 9
-  gbConstraints.gridheight = 2
-  gbConstraints.weightx = 1
-  gbConstraints.weighty = 0
-  gbConstraints.gridx = 3
-  gbConstraints.gridy = 1
-  this.add(pathInfoPanel, gbConstraints)
+  this.add(pathInfoPanel, GridBagConstraintsBuilder().fill(GridBagConstraints.BOTH).gridwidth(9).gridheight(2)
+    .weightx(1).weighty(0).gridx(3).gridy(1).build())
 
   val pathCreationPanel = new JPanel()
   val pathCreationLabel = new JLabel("CreateAt: ")
   pathCreationPanel.add(pathCreationLabel)
-  gbConstraints.fill = GridBagConstraints.BOTH
-  gbConstraints.gridwidth = 9
-  gbConstraints.gridheight = 1
-  gbConstraints.weightx = 1
-  gbConstraints.weighty = 0
-  gbConstraints.gridx = 3
-  gbConstraints.gridy = 3
-  this.add(pathCreationPanel, gbConstraints)
+  this.add(pathCreationPanel, GridBagConstraintsBuilder().fill(GridBagConstraints.BOTH).gridwidth(9).gridheight(1)
+    .weightx(1).weighty(0).gridx(3).gridy(3).build())
 
-  gbConstraints.fill = GridBagConstraints.BOTH
-  gbConstraints.gridwidth = 3
-  gbConstraints.gridheight = 5
-  gbConstraints.weightx = 0
-  gbConstraints.weighty = 1
-  gbConstraints.gridx = 0
-  gbConstraints.gridy = 0
-  this.add(new NodeComponent(new LsCommand(zkClient), new FetchDataCommand(zkClient), a => {
+  new NodeComponent(new LsCommand(zkClient), new FetchDataCommand(zkClient), a => {
     nodeDataPane.setText(a.data.toString)
     pathTextArea.setText(s"${a.path}")
     if (a.creationTime > 0) {
@@ -77,17 +52,14 @@ class DashComponent(zkClient: ZkClientWrapper) extends JPanel(new GridBagLayout)
     } else {
       pathCreationLabel.setText("CreateAt: ")
     }
-  }).build(), gbConstraints)
+  }).build().subscribe(a => {
+    this.add(a, GridBagConstraintsBuilder().fill(GridBagConstraints.BOTH).gridwidth(3).gridheight(5)
+      .weightx(0).weighty(1).gridx(0).gridy(0).build())
+  })
 
   new ServerStateInfoComponent(new ServerStateInfoCommand(zkClient)).build().subscribe(a => {
-    gbConstraints.fill = GridBagConstraints.BOTH
-    gbConstraints.gridwidth = 9
-    gbConstraints.gridheight = 1
-    gbConstraints.weightx = 1
-    gbConstraints.weighty = 0
-    gbConstraints.gridx = 3
-    gbConstraints.gridy = 0
-    this.add(a, gbConstraints)
+    this.add(a, GridBagConstraintsBuilder().fill(GridBagConstraints.BOTH).gridwidth(9).gridheight(1)
+      .weightx(1).weighty(0).gridx(3).gridy(0).build())
   })
 
   def release(): Unit = {

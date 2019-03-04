@@ -8,7 +8,9 @@ import java.util.concurrent.atomic.AtomicInteger
 import javax.swing._
 import javax.swing.plaf.basic.BasicButtonUI
 import org.sixpence.zkdash.config.ConfigHolder
+import org.sixpence.zkdash.view.component.builder.GridBagConstraintsBuilder
 import org.slf4j.LoggerFactory
+import reactor.core.publisher.Mono
 
 /**
   * @author geksong
@@ -37,10 +39,7 @@ class DashFrame(title: String) extends JFrame(title) {
     val sessionCount = new AtomicInteger()
     fileMenuItem.addActionListener(ae => {
       val sessionPanel = new JPanel(new GridBagLayout)
-      val bc = new GridBagConstraints()
-      bc.fill = GridBagConstraints.BOTH
-      bc.weightx = 1
-      bc.weighty = 1
+      val bc = GridBagConstraintsBuilder().fill(GridBagConstraints.BOTH).weightx(1).weighty(1).build()
 
       ConnectComponent(zkCli => {
         sessionPanel.removeAll()
@@ -78,10 +77,7 @@ class DashFrame(title: String) extends JFrame(title) {
     this.setJMenuBar(menuBar)
 
     val tab1Panel = new JPanel(new GridBagLayout)
-    val gbc = new GridBagConstraints()
-    gbc.fill = GridBagConstraints.BOTH
-    gbc.weightx = 1
-    gbc.weighty = 1
+    val gbc = GridBagConstraintsBuilder().fill(GridBagConstraints.BOTH).weightx(1).weighty(1).build()
     ConnectComponent(zkCli => {
       tab1Panel.removeAll()
       tab1Panel.add(new DashComponent(zkCli), gbc)
@@ -102,6 +98,10 @@ class DashFrame(title: String) extends JFrame(title) {
     this.pack()
     this.setVisible(true)
   }
+}
+
+object DashFrame {
+  def apply(): Mono[DashFrame] = Mono.create(sink => sink.success(new DashFrame()))
 }
 
 /**

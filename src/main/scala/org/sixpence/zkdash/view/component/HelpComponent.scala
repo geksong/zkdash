@@ -11,14 +11,16 @@ import reactor.core.publisher.Mono
   */
 class HelpComponent{
   def build(): Mono[JScrollPane] = {
-    Mono.create(sink => {
+    Mono.create[JEditorPane](sink => {
       val ep = new JEditorPane("text/html", "hsfalsdjfj")
       ep.setEditable(true)
-      val container = new JScrollPane(ep)
+      sink.success(ep)
+    }).map(a => {
+      val container = new JScrollPane(a)
       container.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS)
       container.setPreferredSize(new Dimension(250, 145))
       container.setMinimumSize(new Dimension(10, 10))
-      sink.success(container)
+      container
     })
   }
 }

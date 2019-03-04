@@ -49,12 +49,13 @@ class DashFrame(title: String) extends JFrame(title) {
       })
       val index = sessionCount.getAndAdd(1)
       tabPanel.add(s"session#${index + 1}", sessionPanel)
-      tabPanel.setTabComponentAt(tabPanel.indexOfComponent(sessionPanel), new ButtonTabPanel(tabPanel, {
+
+      ButtonTabPanel(tabPanel, {
         sessionPanel.getComponents.foreach({
-            case d: DashComponent => d.release()
-            case _ =>
-          })
-      }))
+          case d: DashComponent => d.release()
+          case _ =>
+        })
+      }).subscribe(a => tabPanel.setTabComponentAt(tabPanel.indexOfComponent(sessionPanel), a))
     })
     fileMenu.add(fileMenuItem)
 
@@ -86,12 +87,13 @@ class DashFrame(title: String) extends JFrame(title) {
     })
     val sessIdx = sessionCount.getAndAdd(1)
     tabPanel.add(s"session#${sessIdx + 1}", tab1Panel)
-    tabPanel.setTabComponentAt(tabPanel.indexOfComponent(tab1Panel), new ButtonTabPanel(tabPanel, {
+
+    ButtonTabPanel(tabPanel, {
       tab1Panel.getComponents.foreach({
-          case d: DashComponent => d.release()
-          case _ =>
-        })
-    }))
+        case d: DashComponent => d.release()
+        case _ =>
+      })
+    }).subscribe(a => tabPanel.setTabComponentAt(tabPanel.indexOfComponent(tab1Panel), a))
 
     this.getContentPane add tabPanel
 
@@ -174,4 +176,8 @@ class ButtonTabPanel(tabPanel: JTabbedPane, closeCallback: => Unit) extends JPan
       gric.dispose()
     }
   }
+}
+
+object ButtonTabPanel {
+  def apply(tabPanel: JTabbedPane, closeCallback: => Unit): Mono[ButtonTabPanel] = Mono.create(sink => sink.success(new ButtonTabPanel(tabPanel, closeCallback)))
 }

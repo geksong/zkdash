@@ -10,11 +10,10 @@ import reactor.core.publisher.Mono
   */
 class ServerStateInfoComponent(ssc: ServerStateInfoCommand) {
   def build(): Mono[JPanel] = {
-    ssc.execute().map(a => {
-      val infoPanel = new JPanel()
-      val serversLabel = new JLabel(s"Servers: ${a.address}", SwingConstants.LEFT)
-      infoPanel.add(serversLabel)
-      infoPanel
-    })
+    ssc.execute().flatMap(a => Mono.create[JLabel](sink => sink.success(new JLabel(s"Servers: ${a.address}", SwingConstants.LEFT))).map(b => {
+        val infoPanel = new JPanel()
+        infoPanel.add(b)
+        infoPanel
+    }))
   }
 }

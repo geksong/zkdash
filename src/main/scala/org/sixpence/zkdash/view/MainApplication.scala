@@ -15,7 +15,7 @@ object MainApplication {
     UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName)
 
     SwingUtilities.invokeLater(() => {
-      new DashFrame()
+      DashFrame().subscribe()
     })
   }
 }

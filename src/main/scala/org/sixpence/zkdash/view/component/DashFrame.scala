@@ -8,7 +8,9 @@ import java.util.concurrent.atomic.AtomicInteger
 import javax.swing._
 import javax.swing.plaf.basic.BasicButtonUI
 import org.sixpence.zkdash.config.ConfigHolder
+import org.sixpence.zkdash.view.component.builder.GridBagConstraintsBuilder
 import org.slf4j.LoggerFactory
+import reactor.core.publisher.Mono
 
 /**
   * @author geksong
@@ -37,22 +39,23 @@ class DashFrame(title: String) extends JFrame(title) {
     val sessionCount = new AtomicInteger()
     fileMenuItem.addActionListener(ae => {
       val sessionPanel = new JPanel(new GridBagLayout)
-      val bc = new GridBagConstraints()
-      bc.fill = GridBagConstraints.BOTH
-      bc.weightx = 1
-      bc.weighty = 1
-      sessionPanel.add(new ConnectComponent(zkCli => {
+      val bc = GridBagConstraintsBuilder().fill(GridBagConstraints.BOTH).weightx(1).weighty(1).build()
+
+      ConnectComponent(zkCli => {
         sessionPanel.removeAll()
         sessionPanel.add(new DashComponent(zkCli), bc)
-      }), bc)
+      }).subscribe(a => {
+        sessionPanel.add(a, bc)
+      })
       val index = sessionCount.getAndAdd(1)
       tabPanel.add(s"session#${index + 1}", sessionPanel)
-      tabPanel.setTabComponentAt(tabPanel.indexOfComponent(sessionPanel), new ButtonTabPanel(tabPanel, {
+
+      ButtonTabPanel(tabPanel, {
         sessionPanel.getComponents.foreach({
-            case d: DashComponent => d.release()
-            case _ =>
-          })
-      }))
+          case d: DashComponent => d.release()
+          case _ =>
+        })
+      }).subscribe(a => tabPanel.setTabComponentAt(tabPanel.indexOfComponent(sessionPanel), a))
     })
     fileMenu.add(fileMenuItem)
 
@@ -75,28 +78,32 @@ class DashFrame(title: String) extends JFrame(title) {
     this.setJMenuBar(menuBar)
 
     val tab1Panel = new JPanel(new GridBagLayout)
-    val gbc = new GridBagConstraints()
-    gbc.fill = GridBagConstraints.BOTH
-    gbc.weightx = 1
-    gbc.weighty = 1
-    tab1Panel.add(new ConnectComponent(zkCli => {
+    val gbc = GridBagConstraintsBuilder().fill(GridBagConstraints.BOTH).weightx(1).weighty(1).build()
+    ConnectComponent(zkCli => {
       tab1Panel.removeAll()
       tab1Panel.add(new DashComponent(zkCli), gbc)
-    }), gbc)
+    }).subscribe(a => {
+      tab1Panel.add(a, gbc)
+    })
     val sessIdx = sessionCount.getAndAdd(1)
     tabPanel.add(s"session#${sessIdx + 1}", tab1Panel)
-    tabPanel.setTabComponentAt(tabPanel.indexOfComponent(tab1Panel), new ButtonTabPanel(tabPanel, {
+
+    ButtonTabPanel(tabPanel, {
       tab1Panel.getComponents.foreach({
-          case d: DashComponent => d.release()
-          case _ =>
-        })
-    }))
+        case d: DashComponent => d.release()
+        case _ =>
+      })
+    }).subscribe(a => tabPanel.setTabComponentAt(tabPanel.indexOfComponent(tab1Panel), a))
 
     this.getContentPane add tabPanel
 
     this.pack()
     this.setVisible(true)
   }
+}
+
+object DashFrame {
+  def apply(): Mono[DashFrame] = Mono.create(sink => sink.success(new DashFrame()))
 }
 
 /**
@@ -169,4 +176,8 @@ class ButtonTabPanel(tabPanel: JTabbedPane, closeCallback: => Unit) extends JPan
       gric.dispose()
     }
   }
+}
+
+object ButtonTabPanel {
+  def apply(tabPanel: JTabbedPane, closeCallback: => Unit): Mono[ButtonTabPanel] = Mono.create(sink => sink.success(new ButtonTabPanel(tabPanel, closeCallback)))
 }

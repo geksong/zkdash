@@ -6,6 +6,8 @@ import java.awt.event._
 import javax.swing.{ImageIcon, _}
 import javax.swing.tree.{DefaultMutableTreeNode, TreeModel, TreePath}
 import org.sixpence.zkdash.command.{FetchDataCommand, LsCommand, PathData}
+import org.sixpence.zkdash.view.component.builder.GridBagConstraintsBuilder
+import reactor.core.publisher.Mono
 
 /**
   * @author geksong
@@ -14,52 +16,45 @@ import org.sixpence.zkdash.command.{FetchDataCommand, LsCommand, PathData}
 class NodeComponent(lsCommand: LsCommand, fetchDataCommand: FetchDataCommand, cf: PathData => Unit) {
   private[this] val top = new DefaultMutableTreeNode("/")
 
-  def build(): JPanel = {
-    val allPan = new JPanel(new GridBagLayout)
-    val gbc = new GridBagConstraints()
-    val tree = new JTree(top)
-    tree.addTreeSelectionListener(e => {
-      val selNode: DefaultMutableTreeNode = e.getPath.getLastPathComponent.asInstanceOf[DefaultMutableTreeNode]
-      // if has no children
-      val pa = selNode.getUserObjectPath.mkString("").replaceAll("//", "/")
-      if(selNode.isLeaf) {
-        lsCommand.execute(pa).subscribe(a => a.foreach(b => {
-          val nd = new DefaultMutableTreeNode(s"/${b}")
-          selNode.add(nd)
-        }))
-      }
-      fetchDataCommand.execute(pa).subscribe(a => cf(a))
+  def build(): Mono[JPanel] = {
+    Mono.create(sink => {
+
+      val allPan = new JPanel(new GridBagLayout)
+      val tree = new JTree(top)
+      tree.addTreeSelectionListener(e => {
+        val selNode: DefaultMutableTreeNode = e.getPath.getLastPathComponent.asInstanceOf[DefaultMutableTreeNode]
+        // if has no children
+        val pa = selNode.getUserObjectPath.mkString("").replaceAll("//", "/")
+        if(selNode.isLeaf) {
+          lsCommand.execute(pa).subscribe(a => a.foreach(b => {
+            val nd = new DefaultMutableTreeNode(s"/${b}")
+            selNode.add(nd)
+          }))
+        }
+        fetchDataCommand.execute(pa).subscribe(a => cf(a))
+      })
+
+      val treeScroll = new JScrollPane(tree)
+      treeScroll.setPreferredSize(new Dimension(250, 400))
+      treeScroll.setMinimumSize(new Dimension(250, 200))
+
+      val searchPan = new JPanel()
+      searchPan.setLayout(new BoxLayout(searchPan, BoxLayout.X_AXIS))
+      val textField = new JTextField("")
+      textField.enableInputMethods(true)
+      textField.addKeyListener(new TreeSearchListener(tree, textField))
+
+      val sechBut = new JButton("Search")
+      sechBut.addActionListener(new TreeSearchListener(tree, textField))
+      searchPan.add(textField)
+      searchPan.add(sechBut)
+
+      allPan.add(searchPan, GridBagConstraintsBuilder().fill(GridBagConstraints.BOTH).gridheight(1).weightx(1)
+          .gridx(0).gridy(0).build())
+      allPan.add(treeScroll, GridBagConstraintsBuilder().fill(GridBagConstraints.BOTH).gridheight(1)
+        .weightx(1).weighty(1).gridx(0).gridy(1).build())
+      sink.success(allPan)
     })
-
-    val treeScroll = new JScrollPane(tree)
-    treeScroll.setPreferredSize(new Dimension(250, 400))
-    treeScroll.setMinimumSize(new Dimension(250, 200))
-
-    val searchPan = new JPanel()
-    searchPan.setLayout(new BoxLayout(searchPan, BoxLayout.X_AXIS))
-    val textField = new JTextField("")
-    textField.enableInputMethods(true)
-    textField.addKeyListener(new TreeSearchListener(tree, textField))
-
-    val sechBut = new JButton("Search")
-    sechBut.addActionListener(new TreeSearchListener(tree, textField))
-    searchPan.add(textField)
-    searchPan.add(sechBut)
-
-    gbc.fill = GridBagConstraints.BOTH
-    gbc.gridheight = 1
-    gbc.weightx = 1
-    gbc.gridx = 0
-    gbc.gridy = 0
-    allPan.add(searchPan, gbc)
-    gbc.fill = GridBagConstraints.BOTH
-    gbc.gridheight = 1
-    gbc.weightx = 1
-    gbc.weighty = 1
-    gbc.gridx = 0
-    gbc.gridy = 1
-    allPan.add(treeScroll, gbc)
-    allPan
   }
 }
 

@@ -18,27 +18,29 @@ class ConnectComponent(cf: ZkClientWrapper => Unit) extends JPanel(new GridBagLa
 
   private val conLabelM = Mono.create[GridComponentContainer[JLabel]](sink => sink.success(new GridComponentContainer[JLabel](new JLabel("Connect to "), GridBagConstraintsBuilder().fill(GridBagConstraints.BOTH).gridwidth(1).gridheight(1)
     .weightx(1).weighty(0).gridx(1).gridy(1).build())))
-  private val zkIpTextM = Mono.create[GridComponentContainer[JTextField]](sink => sink.success(new GridComponentContainer[JTextField](new JTextField("localhost"), GridBagConstraintsBuilder().fill(GridBagConstraints.BOTH).gridwidth(1).gridheight(1)
-    .weightx(1).weighty(0).gridx(2).gridy(1).build())))
-  private val zkPortTextM = Mono.create[GridComponentContainer[JTextField]](sink => sink.success(new GridComponentContainer[JTextField](new JTextField(new NumberDocument, "2181", 0), GridBagConstraintsBuilder().fill(GridBagConstraints.BOTH).gridwidth(1).gridheight(1)
-    .weightx(1).weighty(0).gridx(3).gridy(1).build())))
-  private val connectButton = zkIpTextM.zipWith(zkPortTextM).map[GridComponentContainer[JButton]](t => {
-    val but = new JButton("Connect")
-    but.setMnemonic(KeyEvent.VK_C)
-    but.addActionListener(ae => {
-      Option(t.getT1.component.getText).zip(Option(t.getT2.component.getText)).map(x => s"${x._1}:${x._2}").foreach(zkServer => {
-        val zkClient = new ZkClientWrapper(zkServer)
-        sys.runtime.addShutdownHook(new Thread(() => zkClient.close()))
-        cf(zkClient)
-      })
+  val ipText = new GridComponentContainer[JTextField](new JTextField("localhost"), GridBagConstraintsBuilder().fill(GridBagConstraints.BOTH).gridwidth(1).gridheight(1)
+    .weightx(1).weighty(0).gridx(2).gridy(1).build())
+
+  val portText = new GridComponentContainer[JTextField](new JTextField(new NumberDocument, "2181", 0), GridBagConstraintsBuilder().fill(GridBagConstraints.BOTH).gridwidth(1).gridheight(1)
+    .weightx(1).weighty(0).gridx(3).gridy(1).build())
+
+
+  val but = new JButton("Connect")
+  but.setMnemonic(KeyEvent.VK_C)
+  but.addActionListener(ae => {
+    Option(ipText.component.getText).zip(Option(portText.component.getText)).map(x => s"${x._1}:${x._2}").foreach(zkServer => {
+      val zkClient = new ZkClientWrapper(zkServer)
+      sys.runtime.addShutdownHook(new Thread(() => zkClient.close()))
+      cf(zkClient)
     })
-    new GridComponentContainer[JButton](but, GridBagConstraintsBuilder().fill(GridBagConstraints.BOTH).gridwidth(1).gridheight(1)
-      .weightx(0).weighty(0).gridx(3).gridy(2).build())
   })
+  private val connectButton = Mono.just(new GridComponentContainer[JButton](but, GridBagConstraintsBuilder().fill(GridBagConstraints.BOTH).gridwidth(1).gridheight(1)
+    .weightx(0).weighty(0).gridx(3).gridy(2).build()))
+
 
   conLabelM.asInstanceOf[Mono[GridComponentContainer[Component]]]
-    .concatWith(zkIpTextM.asInstanceOf[Mono[GridComponentContainer[Component]]])
-    .concatWith(zkPortTextM.asInstanceOf[Mono[GridComponentContainer[Component]]])
+    .concatWith(Mono.just(ipText.asInstanceOf[GridComponentContainer[Component]]))
+    .concatWith(Mono.just(portText.asInstanceOf[GridComponentContainer[Component]]))
     .concatWith(connectButton.asInstanceOf[Mono[GridComponentContainer[Component]]]).subscribe(a => {
     this.add(a.component, a.position)
   })

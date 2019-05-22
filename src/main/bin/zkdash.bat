@@ -1,6 +1,6 @@
 @echo off
 
-set ZKDASH_VERSION=1.0.1
+set ZKDASH_VERSION=1.0.2
 
 IF "%JAVA_HOME%" == "" (
     echo "The JAVA_HOME environment variable is not defined correctly."
